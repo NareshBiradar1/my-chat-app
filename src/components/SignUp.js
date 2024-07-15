@@ -2,13 +2,16 @@
 import React, { useState } from 'react';
 import { auth, database } from '../firebase'; // Assuming you have initialized Firebase
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { ref, set } from 'firebase/database'; // Import the ref and set methods
+import { ref, set , serverTimestamp} from 'firebase/database'; // Import the ref and set methods
+import useUser from '../Context/UserContext';
+
 
 
 function SignUp() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
+  const {setUser} = useUser();
 
   const handleSignUp = () => {
     createUserWithEmailAndPassword(auth, email, password)
@@ -16,10 +19,17 @@ function SignUp() {
         // Signed in
         const user = userCredential.user;
         const { uid } = user;
-        // Save additional user data to Realtime Database
+
+        const newUser = {
+            id : uid,
+            name : displayName,
+            isOnline: true,
+            lastTimeOnline: serverTimestamp()
+        }
+        
+        setUser(newUser);
         saveUserData(uid, displayName, email);
         
-        console.log(user);
       })
       .catch(error => {
         console.error(error);
@@ -31,6 +41,8 @@ function SignUp() {
     set(ref(db, 'users/' + uid), {
       displayName: displayName,
       email: email,
+      isOnline: true,
+      lastTimeOnline: serverTimestamp(),
       // Add more fields as needed
     }).then(() => {
       console.log("User data saved successfully.");

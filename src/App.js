@@ -5,14 +5,21 @@ import { onAuthStateChanged } from 'firebase/auth';
 import SignUp from './components/SignUp';
 import Login from './components/Login';
 import Chat from './components/Chat';
+import useUser from './Context/UserContext';
+import setupUserPresenceListener from './components/StatusMonitoring';
+// import loadAllMessages from './components/InitialSetUp';
 
 function App() {
-  const [user, setUser] = useState(null);
+  const {user, setUser} = useUser();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
+
         setUser(user);
+        setupUserPresenceListener(user.uid);
+        // loadAllMessages(user.uid);
+
       } else {
         setUser(null);
       }
@@ -23,8 +30,8 @@ function App() {
 
   return (
     <div className="App">
-      {/* {user ? <Chat /> : <><Login /><SignUp /></>} */}
-      <><Login /><SignUp /></>
+      {user ? <Chat /> : <><Login /><SignUp /></>}
+      {/* <><Login /><SignUp /></> */}
     </div>
   );
 }

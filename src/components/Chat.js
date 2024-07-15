@@ -4,6 +4,7 @@ import { database } from '../firebase';
 import { ref, push, onValue, update , set } from 'firebase/database';
 import { auth } from '../firebase';
 import UserList from './UserList';
+import ChatWindow from './ChatWindow';
 
 function Chat() {
   const [message, setMessage] = useState('');
@@ -81,7 +82,10 @@ function Chat() {
 //     </div>
 //   );
      return(
+        <>
         <UserList/>
+        <ChatWindow/>
+        </>
      );
 
 }
